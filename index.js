@@ -2,20 +2,19 @@ import request from 'request';
 import cheerio from 'cheerio';
 import fs from 'fs';
 
-let index = 99;
-var base = '000000';
+let index = 0;
 
 crawl();
 
 function crawl() {
-    var nextPage = getNextUrl();
-    visitPage(nextPage, crawl);
+    var currentPage = getNextUrl();
+    console.log('currentPage', currentPage);
+    visitPage(currentPage, crawl);
 }
 
 function getNextUrl() {
     index++;
-    return 'http://www.jobif.com/jobprovider_' +
-        base.slice(0, index.toString().length) + index + '.htm';
+    return 'http://www.jobtong.com/e/' + index;
 }
 
 function visitPage(url, callback) {
@@ -23,17 +22,18 @@ function visitPage(url, callback) {
     // Make the request
     request(url, function (error, response, body) {
         // Check status code (200 is HTTP OK)
-        if (error || !response || response.statusCode !== 200) {
+        if (error || !response || response.statusCode >= 400) {
+            console.log('err', err);
             callback();
             return;
         }
         // Parse the document body
         var $ = cheerio.load(body);
         searchForWord($);
-        callback();
+        setTimeout(callback, 1000);
     });
 }
 function searchForWord($) {
-    var companyName = $('h2', 'span.title').text();
-    console.log(companyName);
+    var companyName = $('h1', '.header').text();
+    console.log('companyName', companyName);
 }
