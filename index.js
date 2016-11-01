@@ -36,8 +36,8 @@ function saveToFile($) {
     var companies = $('div.list-item', 'div.company-list');
     companies.each(function (i, elem) {
         var companyName = $(elem).find('.company-name');
-        var companyLink = $(p).find('a');
-        console.log('p', $(p).text());
-        console.log('a',$(a).attr('href'));
+        var companyLink = $(companyName).find('a');
+        console.log('p', $(companyName).text());
+        console.log('a', $(companyLink).attr('href'));
     });
 }
