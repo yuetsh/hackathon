@@ -4,7 +4,7 @@ import fs from 'fs';
 
 let index = 0;
 
-crawl();
+visitPage('https://www.liepin.com/company/pn0', crawl);
 
 function crawl() {
     var currentPage = getNextUrl();
@@ -14,7 +14,7 @@ function crawl() {
 
 function getNextUrl() {
     index++;
-    return 'http://www.jobtong.com/e/' + index;
+    return 'https://www.liepin.com/company/pn' + index;
 }
 
 function visitPage(url, callback) {
@@ -33,25 +33,11 @@ function visitPage(url, callback) {
     });
 }
 function saveToFile($) {
-    var json = {};
-    json.companyName = $('h1', '.header').text();
-
-    var companyInfo = $('span.tag', 'div.tags');
-    json.companyAddress = $(companyInfo[0]).text();
-    json.companyEmployeeCount = $(companyInfo[1]).text();
-    json.companyType = $(companyInfo[2]).text();
-    json.companyIndustry = $(companyInfo[3]).text();
-
-    var parentCompanyInfo = $('p', '.sidebar');
-    json.parentCompanyName = $(parentCompanyInfo[0]).text();
-    json.parentCompanyWebsite = $(parentCompanyInfo[1]).text();
-    json.parentCompanyAddress = $(parentCompanyInfo[2]).text();
-    json.parentCompanyInfo = cheerio.text(parentCompanyInfo);
-
-    json.companyIntroduction = $('div', 'div.introduce').text();
-    console.log('json', json);
-
-    fs.appendFileSync('jobtong-json.text', JSON.stringify(json, null, 4));
-    console.log('save done');
-    crawl();
+    var companies = $('div.list-item', 'div.company-list');
+    companies.each(function (i, elem) {
+        var companyName = $(elem).find('.company-name');
+        var companyLink = $(p).find('a');
+        console.log('p', $(p).text());
+        console.log('a',$(a).attr('href'));
+    });
 }
