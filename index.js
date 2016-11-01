@@ -29,11 +29,10 @@ function visitPage(url, callback) {
         }
         // Parse the document body
         var $ = cheerio.load(body);
-        searchForWord($);
-        // setTimeout(callback, 1000);
+        saveToFile($);
     });
 }
-function searchForWord($) {
+function saveToFile($) {
     var json = {};
     json.companyName = $('h1', '.header').text();
 
@@ -50,5 +49,9 @@ function searchForWord($) {
     json.parentCompanyInfo = cheerio.text(parentCompanyInfo);
 
     json.companyIntroduction = $('div', 'div.introduce').text();
+    console.log('json', json);
 
+    fs.appendFileSync('jobtong-json.text', JSON.stringify(json, null, 4));
+    console.log('save done');
+    crawl();
 }
