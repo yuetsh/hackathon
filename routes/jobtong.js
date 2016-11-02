@@ -28,41 +28,39 @@ router.get('/jobtong', (ctx) => {
             encoding: null,
             gzip: false
         };
-        return setTimeout(() => {
-            return request(options, async(error, response, body) => {
-                // Check status code (200 is HTTP OK)
-                if (error || !response || response.statusCode >= 400) {
-                    console.log(error);
-                    return crawl();
-                }
-                // Parse the document body
-                const $ = cheerio.load(body.toString());
-                const companyName = $('h1', '.header').text();
-                if (companyName) {
-                    let json = {
-                        companyId: currentPage.index,
-                        companyName
-                    };
-
-                    const companyInfo = $('span.tag', 'div.tags');
-                    json.companyAddress = $(companyInfo[0]).text();
-                    json.companyEmployeeCount = $(companyInfo[1]).text();
-                    json.companyType = $(companyInfo[2]).text();
-                    json.companyIndustry = $(companyInfo[3]).text();
-
-                    const parentCompanyInfo = $('p', '.sidebar');
-                    json.parentCompanyName = $(parentCompanyInfo[0]).text();
-                    json.parentCompanyWebsite = $(parentCompanyInfo[1]).text();
-                    json.parentCompanyAddress = $(parentCompanyInfo[2]).text();
-                    json.parentCompanyInfo = cheerio.text(parentCompanyInfo);
-
-                    json.companyIntroduction = $('div', 'div.introduce').text();
-                    await new Jobtong(json).save();
-                    console.log('Done: ', currentPage.index);
-                }
+        setTimeout(() => request(options, async(error, response, body) => {
+            // Check status code (200 is HTTP OK)
+            if (error || !response || response.statusCode >= 400) {
+                console.log(error);
                 return crawl();
-            });
-        }, Helper.random(1000, 2000));
+            }
+            // Parse the document body
+            const $ = cheerio.load(body.toString());
+            const companyName = $('h1', '.header').text();
+            if (companyName) {
+                let json = {
+                    companyId: currentPage.index,
+                    companyName
+                };
+
+                const companyInfo = $('span.tag', 'div.tags');
+                json.companyAddress = $(companyInfo[0]).text();
+                json.companyEmployeeCount = $(companyInfo[1]).text();
+                json.companyType = $(companyInfo[2]).text();
+                json.companyIndustry = $(companyInfo[3]).text();
+
+                const parentCompanyInfo = $('p', '.sidebar');
+                json.parentCompanyName = $(parentCompanyInfo[0]).text();
+                json.parentCompanyWebsite = $(parentCompanyInfo[1]).text();
+                json.parentCompanyAddress = $(parentCompanyInfo[2]).text();
+                json.parentCompanyInfo = cheerio.text(parentCompanyInfo);
+
+                json.companyIntroduction = $('div', 'div.introduce').text();
+                await new Jobtong(json).save();
+                console.log('Done: ', currentPage.index);
+            }
+            return crawl();
+        }), Helper.random(1000, 2000));
     }
 
     crawl();
