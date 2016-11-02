@@ -23,7 +23,7 @@ function visitPage(url, callback) {
     request(url, function (error, response, body) {
         // Check status code (200 is HTTP OK)
         if (error || !response || response.statusCode >= 400) {
-            console.log('err', err);
+            console.log('err', error);
             callback();
             return;
         }
@@ -51,7 +51,7 @@ function saveToFile($) {
     json.companyIntroduction = $('div', 'div.introduce').text();
     console.log('json', json);
 
-    fs.appendFileSync('jobtong-json.text', JSON.stringify(json, null, 4));
+    fs.appendFileSync('jobtong.json', JSON.stringify(json, null, 4));
     console.log('save done');
     crawl();
 }
