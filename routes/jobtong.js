@@ -3,10 +3,13 @@ import cheerio from 'cheerio';
 import Router from 'koa-router';
 import Jobtong from '../models/jobtong';
 import * as Helper from '../services/helper';
+import fs from 'fs';
 
 const router = new Router();
 
-router.get('/jobtong', (ctx) => {
+router.prefix('/jobtong');
+
+router.get('/', (ctx) => {
     ctx.body = '周伯通';
 
     async function getNextUrl() {
@@ -66,11 +69,18 @@ router.get('/jobtong', (ctx) => {
     crawl();
 });
 
-router.get('/jobtong/filter', async(ctx) => {
+router.get('/filter', async(ctx) => {
     ctx.body = '过滤周伯通招聘';
     const count = await Jobtong.count({companyName: ''}).exec();
     console.log(count, '[count]');
     await Jobtong.remove({companyName: ''}).exec();
 
 });
+
+router.get('/csv', async(ctx) => {
+    ctx.body = '生成CSV';
+    const jobtongs = await Jobtong.find({}).sort({companyId: 1}).exec();
+    Jobtong.csvReadStream(jobtongs).pipe(fs.createWriteStream('data/jobtong.csv'));
+});
+
 export default router;

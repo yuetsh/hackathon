@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import mongooseToCsv from 'mongoose-to-csv';
 
 const Schema = mongoose.Schema;
 
@@ -28,6 +29,22 @@ const jobtongSchema = new Schema({
     createAt: {
         type: Number,
         default: Date.now()
+    }
+});
+
+jobtongSchema.plugin(mongooseToCsv, {
+    headers: 'Id 公司名 地址 规模 类型 领域 公司全称 网址 详细地址 信息',
+    constraints: {
+        'Id': 'companyId',
+        '公司名': 'companyName',
+        '地址': 'companyAddress',
+        '规模': 'companyEmployeeCount',
+        '类型': 'companyType',
+        '领域': 'companyIndustry',
+        '公司全称': 'parentCompanyName',
+        '网址': 'parentCompanyWebsite',
+        '详细地址': 'parentCompanyAddress',
+        '信息': 'parentCompanyInfo'
     }
 });
 

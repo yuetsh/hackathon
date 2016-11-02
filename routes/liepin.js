@@ -7,7 +7,9 @@ import * as _ from 'lodash';
 
 const router = new Router();
 
-router.get('/liepin', async(ctx) => {
+router.prefix('/liepin');
+
+router.get('/', async(ctx) => {
     ctx.body = '猎聘';
 
     let index = 0;
@@ -76,35 +78,14 @@ router.get('/liepin', async(ctx) => {
     await crawl();
 });
 
-router.get('/liepin/detail', async(ctx) => {
+router.get('/detail', async(ctx) => {
     ctx.body = '猎聘公司细节';
     const companies = await Liepin.find({}, {companyId: 1}).exec();
     let index = 0;
     const total = companies && companies.length;
+    companies.reduce((prev, company) => {
 
-    const infos = await Promise.all(_.map(companies.slice(index, index + 50), async(company) => {
-        const url = `https://www.liepin.com/company/${company.companyId}/`;
-        const options = {
-            url,
-            headers: {
-                'User-Agent': Helper.randomUA()
-            },
-            encoding: null,
-            gzip: true
-        };
-        await setTimeout(async() => {
-            request(options, (error, response, body) => {
-                // Check status code (200 is HTTP OK)
-                if (error || !response || response.statusCode >= 400) {
-                    console.log('error', error);
-                    return;
-                }
-                const $ = cheerio.load(body.toString());
-                const l = $('h1', '.name-and-welfare').text();
-                console.log(body.toString(), '[$]');
-            });
-        }, Helper.random(500, 2500));
-    }));
+    }, {})
 });
 
 export default router;

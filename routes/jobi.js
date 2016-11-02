@@ -3,7 +3,10 @@ import cheerio from 'cheerio';
 import Router from 'koa-router';
 
 const router = new Router();
-router.get('/jobi', async(ctx) => {
+
+router.prefix('/jobi');
+
+router.get('/', async(ctx) => {
     ctx.body = 'jobi';
     crawl();
 });
