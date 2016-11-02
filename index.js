@@ -23,18 +23,18 @@ function visitPage(url, callback) {
     request(url, function (error, response, body) {
         // Check status code (200 is HTTP OK)
         if (error || !response || response.statusCode >= 400) {
-            console.log('err', err);
+            console.log('err', error);
             callback();
             return;
         }
         // Parse the document body
-        var $ = cheerio.load(body);
+        var $ = cheerio.load(body.toString());
         saveToFile($);
     });
 }
 function saveToFile($) {
     var companies = $('div.list-item', 'div.company-list');
-    companies.each(function (i, elem) {
+    companies.each((i, elem) => {
         var companyName = $(elem).find('.company-name');
         var companyLink = $(companyName).find('a');
         console.log('p', $(companyName).text());
