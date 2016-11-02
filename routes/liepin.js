@@ -3,7 +3,6 @@ import cheerio from 'cheerio';
 import Router from 'koa-router';
 import Liepin from '../models/liepin';
 import * as Helper from '../services/helper';
-import * as _ from 'lodash';
 import fs from 'fs';
 
 const router = new Router();
@@ -18,21 +17,21 @@ router.get('/', async(ctx) => {
 
     function getNextUrl() {
         index++;
-        return 'https://www.liepin.com/company/000-040/pn' + index; // 互联网行业
+        return 'https://www.liepin.com/company/000-040/pn' + index;
     }
 
     async function crawl() {
         console.log(index, '[index]');
         if (index < 109) {
             const currentPage = getNextUrl();
-            await visitPage(currentPage, crawl);
+            await visitPage(currentPage);
         } else {
             await Liepin.insertMany(jsons);
             console.log('done');
         }
     }
 
-    async function visitPage(url, callback) {
+    async function visitPage(url) {
         // Make the request
         const options = {
             url,
@@ -40,38 +39,27 @@ router.get('/', async(ctx) => {
                 'User-Agent': Helper.randomUA()
             },
             encoding: null,
-            gzip: true,
-            time: true
+            gzip: true
         };
-        request(options, async(error, response, body) => {
+        setTimeout(() => request(options, (error, response, body) => {
             // Check status code (200 is HTTP OK)
             if (error || !response || response.statusCode >= 400) {
-                console.log('error', error);
-                callback();
-                return;
-            }
-            // timeout
-            if (response.elapsedTime > 500) {
-                callback();
-                return;
+                console.log('error', error, response.statusCode);
+                return crawl();
             }
             // Parse the document body
             var $ = cheerio.load(body.toString());
-            return saveToFile($);
-        });
-    }
-
-    async function saveToFile($) {
-        const companies = $('div.list-item', 'div.company-list');
-        companies.each((i, elem) => {
-            const companyNameElem = $(elem).find('.company-name');
-            const companyLinkElem = $(companyNameElem).find('a');
-            jsons.push({
-                companyId: $(companyLinkElem).attr('href').match(/\d/g).join(''),
-                companyName: $(companyNameElem).text()
+            const companies = $('div.list-item', 'div.company-list');
+            companies.each((i, elem) => {
+                const companyNameElem = $(elem).find('.company-name');
+                const companyLinkElem = $(companyNameElem).find('a');
+                jsons.push({
+                    companyId: $(companyLinkElem).attr('href').match(/\d/g).join(''),
+                    companyName: $(companyNameElem).text()
+                });
             });
-        });
-        return crawl();
+            return crawl();
+        }), Helper.random(1000, 2000));
     }
 
     const count = await Liepin.count().exec();
@@ -86,7 +74,7 @@ router.get('/detail', async(ctx) => {
     const total = companies && companies.length;
     companies.reduce((prev, company) => {
 
-    }, {})
+    }, {});
 });
 
 router.get('/csv', async(ctx) => {
