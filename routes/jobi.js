@@ -1,6 +1,5 @@
 import request from 'request';
 import cheerio from 'cheerio';
-import fs from 'fs';
 import Router from 'koa-router';
 
 const router = new Router();

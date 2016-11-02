@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const jobtongSchema = new Schema({
+const liepinSchema = new Schema({
     category: {
         type: Number,
         index: true,
@@ -16,19 +16,15 @@ const jobtongSchema = new Schema({
         type: String,
         index: true
     },
+    companyIndustry: String,
     companyAddress: String,
     companyEmployeeCount: String,
     companyType: String,
-    companyIndustry: String,
-    companyIntroduction: String,
-    parentCompanyName: String,
-    parentCompanyWebsite: String,
-    parentCompanyAddress: String,
-    parentCompanyInfo: String,
+    companyWelfare: [String],
     createAt: {
         type: Number,
         default: Date.now()
     }
 });
 
-export default mongoose.model('Jobtong', jobtongSchema, 'Jobtong');
+export default mongoose.model('Liepin', liepinSchema, 'Liepin');

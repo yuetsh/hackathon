@@ -10,7 +10,7 @@ router.get('/jobtong', async(ctx) => {
     ctx.body = '周伯通';
 
     function getNextUrl() {
-        const index = Helper.random(2000, 50000);
+        const index = Helper.random(1000, 50000);
         return {url: 'http://www.jobtong.com/e/' + index, index};
     }
 
@@ -19,7 +19,7 @@ router.get('/jobtong', async(ctx) => {
         console.log('jobtong_company:id ', currentPage.index);
         await setTimeout(async() => {
             await visitPage(currentPage, crawl);
-        }, Helper.random(1000, 2500));
+        }, Helper.random(500, 2500));
     }
 
     async function visitPage(current, callback) {
@@ -30,10 +30,10 @@ router.get('/jobtong', async(ctx) => {
                 'User-Agent': Helper.randomUA()
             },
             encoding: null,
-            gzip: false,
+            gzip: true,
             time: true
         };
-        request(options, (error, response, body) => {
+        request(options, async(error, response, body) => {
             // Check status code (200 is HTTP OK)
             if (error || !response || response.statusCode >= 400) {
                 console.log('error', error);
@@ -47,7 +47,7 @@ router.get('/jobtong', async(ctx) => {
             }
             // Parse the document body
             var $ = cheerio.load(body.toString());
-            saveToFile($, current.index);
+            await saveToFile($, current.index);
         });
     }
 
