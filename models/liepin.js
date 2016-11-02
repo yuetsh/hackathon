@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import mongooseToCsv from 'mongoose-to-csv';
 
 const Schema = mongoose.Schema;
 
@@ -24,6 +25,19 @@ const liepinSchema = new Schema({
     createAt: {
         type: Number,
         default: Date.now()
+    }
+});
+
+liepinSchema.plugin(mongooseToCsv, {
+    headers: 'Id 公司名 地址 规模 类型 领域 福利',
+    constraints: {
+        'Id': 'companyId',
+        '公司名': 'companyName',
+        '地址': 'companyAddress',
+        '规模': 'companyEmployeeCount',
+        '类型': 'companyType',
+        '领域': 'companyIndustry',
+        '福利': 'companyWelfare'
     }
 });
 

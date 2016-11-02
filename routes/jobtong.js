@@ -78,7 +78,7 @@ router.get('/filter', async(ctx) => {
 });
 
 router.get('/csv', async(ctx) => {
-    ctx.body = '生成CSV';
+    ctx.body = '周伯通招聘生成CSV';
     const jobtongs = await Jobtong.find({}).sort({companyId: 1}).exec();
     Jobtong.csvReadStream(jobtongs).pipe(fs.createWriteStream('data/jobtong.csv'));
 });

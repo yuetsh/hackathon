@@ -4,6 +4,7 @@ import Router from 'koa-router';
 import Liepin from '../models/liepin';
 import * as Helper from '../services/helper';
 import * as _ from 'lodash';
+import fs from 'fs';
 
 const router = new Router();
 
@@ -86,6 +87,12 @@ router.get('/detail', async(ctx) => {
     companies.reduce((prev, company) => {
 
     }, {})
+});
+
+router.get('/csv', async(ctx) => {
+    ctx.body = '猎聘生成CSV';
+    const liepins = await Liepin.find({}).sort({companyId: 1}).exec();
+    Liepin.csvReadStream(liepins).pipe(fs.createWriteStream('data/liepin.csv'));
 });
 
 export default router;
