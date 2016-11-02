@@ -10,7 +10,7 @@ router.get('/jobtong', (ctx) => {
     ctx.body = '周伯通';
 
     async function getNextUrl() {
-        const index = Helper.random(1000, 2000);
+        const index = Helper.random(2000, 3000);
         const existCompanyCount = await Jobtong.count({companyId: index}).exec();
         if (existCompanyCount) return getNextUrl();
         console.log('Index:', index);
@@ -37,7 +37,7 @@ router.get('/jobtong', (ctx) => {
                     return crawl();
                 }
                 // 超时
-                if (response.elapsedTime > 5000) {
+                if (response.elapsedTime > 3000) {
                     console.log('Time:', response.elapsedTime);
                     return crawl();
                 }
@@ -65,7 +65,7 @@ router.get('/jobtong', (ctx) => {
                 console.log('Done: ', currentPage.index);
                 return crawl();
             });
-        }, Helper.random(500, 2000));
+        }, Helper.random(1000, 2000));
     }
 
     crawl();
