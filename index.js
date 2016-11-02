@@ -38,7 +38,7 @@ function visitPage(url, callback) {
 
     // Make the request
     console.log("Visiting page " + url);
-    request(url, function (error, response, body) {
+    request(url, (error, response, body) => {
         // Check status code (200 is HTTP OK)
         if (error || !response || response.statusCode !== 200) {
             callback();
@@ -47,9 +47,8 @@ function visitPage(url, callback) {
         // Parse the document body
         var $ = cheerio.load(body);
         var relativeLinks = $("a[href^='/']");
-        relativeLinks.each(function () {
+        relativeLinks.each(() => {
             pagesToVisit.push(baseUrl + $(this).attr('href'));
-
         });
         searchForWord($, SEARCH_WORD);
         crawl();
