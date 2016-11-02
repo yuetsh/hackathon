@@ -16,12 +16,13 @@ router.get('/', (ctx) => {
         const index = Helper.random(10000, 100000);
         const existCompanyCount = await Jobtong.count({companyId: index}).exec();
         if (existCompanyCount) return getNextUrl();
-        console.log('Index:', index);
         return {url: 'http://www.jobtong.com/e/' + index, index};
     }
 
     async function crawl() {
         const currentPage = await getNextUrl();
+        console.log('currentPage', currentPage);
+
         // Make the request
         const options = {
             url: currentPage.url,
@@ -29,7 +30,8 @@ router.get('/', (ctx) => {
                 'User-Agent': Helper.randomUA()
             },
             encoding: null,
-            gzip: false
+            gzip: false,
+            timeout: 5000
         };
         setTimeout(() => request(options, async(error, response, body) => {
             // Check status code (200 is HTTP OK)
@@ -41,6 +43,11 @@ router.get('/', (ctx) => {
             const $ = cheerio.load(body.toString());
             const companyName = $('h1', '.header').text();
             if (companyName) {
+                const existingCompany = await Jobtong.findOne({companyName}).exec();
+                if (existingCompany) {
+                    console.log('duplicate company', existingCompany);
+                    return crawl();
+                }
                 let json = {
                     companyId: currentPage.index,
                     companyName
