@@ -6,18 +6,19 @@ import * as Helper from '../services/helper';
 
 const router = new Router();
 
-router.get('/jobtong', async(ctx) => {
+router.get('/jobtong', (ctx) => {
     ctx.body = '周伯通';
 
-    function getNextUrl() {
-        const index = Helper.random(100, 1000);
+    async function getNextUrl() {
+        const index = Helper.random(1000, 2000);
+        const existCompanyCount = await Jobtong.count({companyId: index}).exec();
+        if (existCompanyCount) return getNextUrl();
         console.log('Index:', index);
         return {url: 'http://www.jobtong.com/e/' + index, index};
     }
 
-    function crawl(flag) {
-        console.log('In crawl:', flag);
-        const currentPage = getNextUrl();
+    async function crawl() {
+        const currentPage = await getNextUrl();
         // Make the request
         const options = {
             url: currentPage.url,
@@ -32,15 +33,13 @@ router.get('/jobtong', async(ctx) => {
             request(options, async(error, response, body) => {
                 // Check status code (200 is HTTP OK)
                 if (error || !response || response.statusCode >= 400) {
-                    console.log('error', error);
-                    crawl(1);
-                    return;
+                    console.log(error);
+                    return crawl();
                 }
                 // 超时
                 if (response.elapsedTime > 5000) {
                     console.log('Time:', response.elapsedTime);
-                    crawl(2);
-                    return;
+                    return crawl();
                 }
                 // Parse the document body
                 const $ = cheerio.load(body.toString());
@@ -62,19 +61,14 @@ router.get('/jobtong', async(ctx) => {
                 json.parentCompanyInfo = cheerio.text(parentCompanyInfo);
 
                 json.companyIntroduction = $('div', 'div.introduce').text();
-                const existCompanyCount = await Jobtong.count({companyId: currentPage.index}).exec();
-                if (existCompanyCount) {
-                    console.log('Exist in db, id:', currentPage.index);
-                } else {
-                    await new Jobtong(json).save();
-                    console.log('Done');
-                }
-                return crawl(3);
+                await new Jobtong(json).save();
+                console.log('Done: ', currentPage.index);
+                return crawl();
             });
-        }, Helper.random(800, 1800));
+        }, Helper.random(500, 2000));
     }
 
-    await crawl(0);
+    crawl();
 });
 
 export default router;
