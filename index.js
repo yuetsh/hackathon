@@ -20,7 +20,15 @@ function getNextUrl() {
 function visitPage(url, callback) {
 
     // Make the request
-    request(url, function (error, response, body) {
+    const options = {
+        url,
+        headers: {
+            'User-Agent': `Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1`
+        },
+        encoding: null,
+        gzip: false
+    };
+    request(options, (error, response, body) => {
         // Check status code (200 is HTTP OK)
         if (error || !response || response.statusCode >= 400) {
             console.log('err', error);
@@ -28,7 +36,7 @@ function visitPage(url, callback) {
             return;
         }
         // Parse the document body
-        var $ = cheerio.load(body);
+        var $ = cheerio.load(body.toString());
         saveToFile($);
     });
 }
@@ -51,7 +59,7 @@ function saveToFile($) {
     json.companyIntroduction = $('div', 'div.introduce').text();
     console.log('json', json);
 
-    fs.appendFileSync('jobtong.json', JSON.stringify(json, null, 4));
+    fs.appendFileSync('jobtong.text', JSON.stringify(json, null, 4));
     console.log('save done');
     crawl();
 }
