@@ -91,7 +91,7 @@ router.get('/email', async(ctx) => {
         return body.match(re);
     }
 
-    const companies = await Jobtong.find({}, {_id: 1, companyName: 1}).skip(Math.floor(Math.random() * 1000)).exec();
+    const companies = await Jobtong.find({emails: {$size: 0}}, {_id: 1, companyName: 1}).exec();
     const companyList = companies.map((company) => company.companyName);
     console.log('companyList', companyList);
 
