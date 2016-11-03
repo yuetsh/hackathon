@@ -1,6 +1,3 @@
-/**
- * Created by linyuan on 11/2/16.
- */
 function removeDuplicateCompany() {
     db.Jobtong.aggregate([
             {
