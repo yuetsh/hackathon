@@ -17,6 +17,10 @@ const jobtongSchema = new Schema({
         type: String,
         index: true
     },
+    emails: {
+        type: [String],
+        index: true
+    },
     companyAddress: String,
     companyEmployeeCount: String,
     companyType: String,

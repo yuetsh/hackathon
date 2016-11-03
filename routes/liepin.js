@@ -77,6 +77,10 @@ router.get('/detail', async(ctx) => {
     }, {});
 });
 
+router.get('/email', async(ctx) => {
+
+})
+
 router.get('/csv', async(ctx) => {
     ctx.body = '猎聘生成CSV';
     const liepins = await Liepin.find({}).sort({companyId: 1}).exec();
