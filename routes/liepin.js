@@ -39,7 +39,8 @@ router.get('/', async(ctx) => {
                 'User-Agent': Helper.randomUA()
             },
             encoding: null,
-            gzip: true
+            gzip: false,
+            timeout: 5000
         };
         setTimeout(() => request(options, (error, response, body) => {
             // Check status code (200 is HTTP OK)

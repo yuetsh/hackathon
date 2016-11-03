@@ -21,7 +21,7 @@ router.get('/', (ctx) => {
 
     async function crawl() {
         const currentPage = await getNextUrl();
-        console.log('currentPage', currentPage);
+        console.log('Index: ', currentPage.index);
 
         // Make the request
         const options = {
@@ -43,9 +43,8 @@ router.get('/', (ctx) => {
             const $ = cheerio.load(body.toString());
             const companyName = $('h1', '.header').text();
             if (companyName) {
-                const existingCompany = await Jobtong.findOne({companyName}).exec();
-                if (existingCompany) {
-                    console.log('duplicate company', existingCompany);
+                const existingCompanyCount = await Jobtong.count({companyName}).exec();
+                if (existingCompanyCount) {
                     return crawl();
                 }
                 let json = {
