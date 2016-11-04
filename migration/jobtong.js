@@ -21,6 +21,6 @@ function removeDuplicateCompany() {
 removeDuplicateCompany();
 
 function setEmails() {
-    db.Jobtong.update({email: {$exists: false}}, {$set: {emails: []}}, {multi: true})
+    db.Jobtong.update({emails: {$exists: false}}, {$set: {emails: []}}, {multi: true});
 }
 setEmails();
