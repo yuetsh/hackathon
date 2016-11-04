@@ -14,7 +14,7 @@ router.get('/', (ctx) => {
     ctx.body = '周伯通';
 
     async function getNextUrl() {
-        const index = Helper.random(10000, 100000);
+        const index = Helper.random(100000, 200000);
         const existCompanyCount = await Jobtong.count({companyId: index}).exec();
         if (existCompanyCount) return getNextUrl();
         return {url: 'http://www.jobtong.com/e/' + index, index};
@@ -22,8 +22,6 @@ router.get('/', (ctx) => {
 
     async function crawl() {
         const currentPage = await getNextUrl();
-        console.log('Index: ', currentPage.index);
-
         // Make the request
         const options = {
             url: currentPage.url,
@@ -37,7 +35,7 @@ router.get('/', (ctx) => {
         setTimeout(() => request(options, async(error, response, body) => {
             // Check status code (200 is HTTP OK)
             if (error || !response || response.statusCode >= 400) {
-                console.log(error);
+                console.log('Error');
                 return crawl();
             }
             // Parse the document body
