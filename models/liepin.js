@@ -22,6 +22,11 @@ const liepinSchema = new Schema({
     companyEmployeeCount: String,
     companyType: String,
     companyWelfare: [String],
+    emails: {
+        type: [String],
+        index: true,
+        default: []
+    },
     createAt: {
         type: Number,
         default: Date.now()
@@ -29,7 +34,7 @@ const liepinSchema = new Schema({
 });
 
 liepinSchema.plugin(mongooseToCsv, {
-    headers: 'Id 公司名 地址 规模 类型 领域 福利',
+    headers: 'Id 公司名 HR邮箱 地址 规模 类型 领域 福利',
     constraints: {
         'Id': 'companyId',
         '公司名': 'companyName',
@@ -38,6 +43,9 @@ liepinSchema.plugin(mongooseToCsv, {
         '类型': 'companyType',
         '领域': 'companyIndustry',
         '福利': 'companyWelfare'
+    },
+    virtuals: {
+        'HR邮箱': (doc) => doc.emails && doc.emails.length ? doc.emails.join(' ') : ''
     }
 });
 

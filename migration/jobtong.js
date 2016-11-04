@@ -22,5 +22,6 @@ removeDuplicateCompany();
 
 function setEmails() {
     db.Jobtong.update({emails: {$exists: false}}, {$set: {emails: []}}, {multi: true});
+    db.Liepin.update({emails: {$exists: false}}, {$set: {emails: []}}, {multi: true});
 }
 setEmails();
