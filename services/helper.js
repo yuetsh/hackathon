@@ -12,15 +12,11 @@ export function randomUA() {
 }
 
 export function download(url, dir) {
-    if (!path.extname(dir)) {
-        dir = path.join(dir, path.basename(url));
-    }
+    dir = path.join(dir, path.basename(url));
     console.log(dir);
     return new Promise((resolve, reject) => {
         request.head(url, (err, res, body) => {
-            if (err) {
-                reject(err);
-            };
+            if (err) reject(err);
             const steam = request(url).pipe(fs.createWriteStream(dir));
             steam.on('finish', () => resolve());
         });
