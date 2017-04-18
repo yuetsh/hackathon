@@ -3,6 +3,18 @@ import request from 'request';
 import fs from 'fs';
 import path from 'path';
 
+export function getOptions(url) {
+    return {
+        url,
+        headers: {
+            'User-Agent': randomUA()
+        },
+        encoding: null,
+        gzip: false,
+        timeout: 5000
+    };
+}
+
 export function random(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }

@@ -2,7 +2,7 @@ import request from 'request';
 import cheerio from 'cheerio';
 import Router from 'koa-router';
 import fs from 'fs';
-import { download, randomUA } from '../services/helper';
+import { download, randomUA, getOptions } from '../services/helper';
 
 const router = new Router();
 
@@ -21,16 +21,8 @@ router.get('/', async (ctx) => {
 
     async function visitPage(url) {
         // Make the request
-        const options = {
-            url,
-            headers: {
-                'User-Agent': randomUA()
-            },
-            encoding: null,
-            gzip: false,
-            timeout: 5000
-        };
-        request(options, (error, response, body) => {
+        const options = getOptions(url);
+        setTimeout(() => request(options, (error, response, body) => {
             // Check status code (200 is HTTP OK)
             if (error || !response || response.statusCode >= 400) {
                 console.log('error', error);
@@ -43,7 +35,7 @@ router.get('/', async (ctx) => {
                 await download(src, dir);
             });
             return crawl();
-        });
+        }), random(1000, 2000));
     }
 
     async function crawl() {
