@@ -2,18 +2,18 @@ import request from 'request';
 import cheerio from 'cheerio';
 import Router from 'koa-router';
 import fs from 'fs';
-import { download, randomUA } from '../services/helper';
+import { downloadMovie, randomUA } from '../services/helper';
 
 const router = new Router();
 
-router.prefix('/mmjpg');
+router.prefix('/haodiao');
 
 router.get('/', async (ctx) => {
-    ctx.body = 'mmjpg';
-    const url = `http://www.mmjpg.com/home/`;
-    const dir = `images`;
+    ctx.body = 'haodiao';
+    const url = 'http://haodiao.org/';
+    const dir = 'images';
 
-    let index = 1;
+    let index = 3818;
     function getNextUrl(url) {
         index++;
         return url + index;
@@ -30,7 +30,7 @@ router.get('/', async (ctx) => {
             gzip: false,
             timeout: 5000
         };
-        request(options, (error, response, body) => {
+        request(options, async (error, response, body) => {
             // Check status code (200 is HTTP OK)
             if (error || !response || response.statusCode >= 400) {
                 console.log('error', error);
@@ -38,18 +38,19 @@ router.get('/', async (ctx) => {
             }
             // Parse the document body
             var $ = cheerio.load(body.toString());
-            $('div.pic ul li').each(async (i, elem) => {
-                const src = $(elem).find('img').attr('src');
-                console.log('正在下载' + src);
-                await download(src, dir);
-            });
+            const elem = $('video#olvideo_html5_api');
+            if (!elem) return;
+            elem.onclick()
+            const src = elem.attr('src');
+            await downloadMovie(src, dir);
+            console.log('下载完成' + src);
             return crawl();
         });
     }
 
     async function crawl() {
         console.log(index, '[index]');
-        if (index < 65) {
+        if (index < 3826) {
             const currentPage = getNextUrl(url);
             visitPage(currentPage);
         } else {
