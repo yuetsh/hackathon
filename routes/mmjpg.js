@@ -11,7 +11,7 @@ router.prefix('/mmjpg');
 router.get('/', async (ctx) => {
     ctx.body = 'mmjpg';
     const url = `http://www.mmjpg.com/home/`;
-    const dir = `images`;
+    const dir = `images/mmjpg/home`;
 
     let index = 1;
     function getNextUrl(url) {
@@ -40,7 +40,6 @@ router.get('/', async (ctx) => {
             var $ = cheerio.load(body.toString());
             $('div.pic ul li').each(async (i, elem) => {
                 const src = $(elem).find('img').attr('src');
-                console.log('正在下载' + src);
                 await download(src, dir);
             });
             return crawl();

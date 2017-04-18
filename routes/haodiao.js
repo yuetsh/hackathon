@@ -2,7 +2,7 @@ import request from 'request';
 import cheerio from 'cheerio';
 import Router from 'koa-router';
 import fs from 'fs';
-import { downloadMovie, randomUA } from '../services/helper';
+import { download, randomUA, random } from '../services/helper';
 
 const router = new Router();
 
@@ -11,12 +11,14 @@ router.prefix('/haodiao');
 router.get('/', async (ctx) => {
     ctx.body = 'haodiao';
     const url = 'http://haodiao.org/';
-    const dir = 'images';
-
-    let index = 3818;
+    const dir = 'images/haodiao/cosplay';
+    const pages = ['3339', '3421', '3477', '3185', '3101', '3028', '2957', '2956', '2879', '2732', '2674',
+        '2618', '2512', '309', '465', '616', '632', '722', '873', '1390', '1478', '1635', '1642', '1700',
+        '1829', '1957', '2017', '2031', '2225', '2222', '2083', '2317', '2348', '2320', '2430',]
+    let index = 0;
     function getNextUrl(url) {
         index++;
-        return url + index;
+        return url + pages[index];
     }
 
     async function visitPage(url) {
@@ -30,7 +32,7 @@ router.get('/', async (ctx) => {
             gzip: false,
             timeout: 5000
         };
-        request(options, async (error, response, body) => {
+        setTimeout(() => request(options, async (error, response, body) => {
             // Check status code (200 is HTTP OK)
             if (error || !response || response.statusCode >= 400) {
                 console.log('error', error);
@@ -38,19 +40,19 @@ router.get('/', async (ctx) => {
             }
             // Parse the document body
             var $ = cheerio.load(body.toString());
-            const elem = $('video#olvideo_html5_api');
-            if (!elem) return;
-            elem.onclick()
-            const src = elem.attr('src');
-            await downloadMovie(src, dir);
-            console.log('下载完成' + src);
+            const images = $('.article-content > div > div > div');
+            if (!images || !images.length) return crawl();
+            images.map(async (i, elem) => {
+                const src = $(elem).find('a').attr('href');
+                if (src) await download(src, dir);
+            }, );
             return crawl();
-        });
+        }), random(1000, 2000));
     }
 
     async function crawl() {
         console.log(index, '[index]');
-        if (index < 3826) {
+        if (index < pages.length) {
             const currentPage = getNextUrl(url);
             visitPage(currentPage);
         } else {
