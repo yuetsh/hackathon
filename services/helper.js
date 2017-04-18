@@ -25,13 +25,13 @@ export function randomUA() {
 
 export function download(url, dir) {
     dir = path.join(dir, path.basename(url));
-    console.log(dir);
     return new Promise((resolve, reject) => {
-        request.head(url, (err, res, body) => {
+        url = getOptions(url);
+        request(url, (err, res, body) => {
             if (err) reject(err);
             const steam = request(url).pipe(fs.createWriteStream(dir));
             steam.on('finish', () => {
-                console.log(`downloaded ${dir}`);
+                console.log(`下载完毕 ${dir}`);
                 resolve();
             });
         });
